@@ -263,3 +263,54 @@ docker compose down
 ```
 
 ---
+
+## Implementation notes
+
+- All five required endpoints persist data through SQLAlchemy. The API creates
+  tables on startup and uses the PostgreSQL connection supplied by Docker Compose.
+- The interface loads the catalog once and filters it locally by title and genre.
+  The API also supports `GET /books?q=...&genre=...` for other clients.
+- Creating a book updates the catalog immediately. Selecting a book loads its
+  details and checkout history. The checkout selector always contains the full
+  catalog, even when the visible book list is filtered.
+- Forms show validation errors and save confirmations, and disable submission
+  while a save is in progress. Failed submissions retain the entered fields.
+- Book IDs that do not exist return 404. Invalid request fields return 422.
+  Empty searches return an empty list, not an error. Text searches are
+  case-insensitive, and SQL wildcard characters are treated literally.
+- Checkouts are historical records. Returns, due dates, copy availability,
+  authentication, and editing/deletion are outside this challenge's scope.
+
+### Review checklist
+
+1. Start the app with `docker compose up --build` and open http://localhost:5173.
+2. Create two books with different genres. Confirm all fields in each detail view.
+3. Search by part of a title, combine it with a genre, and test a search with no matches.
+4. Select a book and record a checkout. Confirm the patron, date, and notes appear
+   only in that book's history. Record another checkout without losing the first.
+5. Refresh the browser and confirm the saved books and history are still present.
+6. Try an invalid publisher email and an empty title; confirm the submission is rejected.
+7. Check the latest GitHub Actions **Grade** result after pushing. Skipped is not PASS.
+
+### Development without Docker
+
+With PostgreSQL running and an empty `libraryconnect` database created, install
+`backend/requirements.txt`, set `DATABASE_URL` to your PostgreSQL connection URL,
+and run `python -m uvicorn backend.app:app --reload --port 8000` from the root.
+In a second terminal, run `npm ci` and `npm run dev` inside `frontend/`.
+The supplied SQLite fallback is convenient for unit tests, but the required app
+should run with PostgreSQL. Keep local credentials out of commits.
+
+### Implementation-session verification
+
+- Supplied backend tests: 12 passed.
+- Supplied frontend tests: 20 passed.
+- TypeScript compilation and ESLint passed.
+- Production frontend bundle built successfully. The Codex Windows sandbox
+  required Vite's `--configLoader native` option because esbuild could not scan
+  an ancestor directory; the project's normal build command is unchanged.
+- Additional checks ran against PostgreSQL 16: saved records, combined filters,
+  literal wildcard searches, invalid fields, missing books, checkout history,
+  and persistence across application lifespans.
+- Browser verification created a book and checkout and confirmed both after reload.
+- Docker Compose itself has not been run in this environment (Docker is not installed).

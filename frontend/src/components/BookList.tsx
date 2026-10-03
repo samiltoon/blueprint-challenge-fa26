@@ -47,15 +47,17 @@ function BookList({
         </select>
       </div>
 
-      {/* TODO: Add empty-state messaging when no books match the current search/filter. */}
+      <p className="results-count">{books.length} {books.length === 1 ? "book" : "books"} shown</p>
+      {books.length === 0 && <div className="empty-state"><strong>No books found</strong><p>Change the search or genre, or add a book.</p></div>}
       <ul className="list">
         {books.map((book) => (
           <li key={book.id} className="list-item">
             <div>
               <strong>{book.title}</strong>
+              <span className="book-author">{book.author} <span aria-hidden="true">·</span> {book.shelf_location}</span>
               <span className="tag">{book.genre}</span>
             </div>
-            <button onClick={() => onSelectBook(book.id)}>View Details</button>
+            <button className="secondary" onClick={() => onSelectBook(book.id)}>View Details</button>
           </li>
         ))}
       </ul>

@@ -1,1 +1,10 @@
 __pycache___
+# Local development artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+*.db
+.env
+node_modules/
+dist/

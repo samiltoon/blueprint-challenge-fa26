@@ -31,6 +31,7 @@ function BookDetail({ book, checkouts }: BookDetailProps) {
       </dl>
 
       <h3>Checkouts</h3>
+      {checkouts.length === 0 && <p className="section-note">No checkouts recorded for this book yet.</p>}
       <ul className="list">
         {checkouts.map((checkout) => (
           <li key={checkout.id} className="list-item">

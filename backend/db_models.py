@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from sqlalchemy import Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -33,7 +35,7 @@ class Checkout(Base):
     book_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("books.id"), index=True, nullable=False
     )
-    date: Mapped[Date] = mapped_column(Date, nullable=False)
+    date: Mapped[date] = mapped_column(Date, nullable=False)
     notes: Mapped[str] = mapped_column(Text, nullable=False)
 
     book: Mapped[Book] = relationship("Book", back_populates="checkouts")
